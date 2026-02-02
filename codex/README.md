@@ -127,27 +127,19 @@ See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
 - `init.sh` - Project initialization script
 - `checks.sh` - Definition-of-done validation
 
-## Working Directory
+## Working Directory and Sandbox
 
-**Template scripts** use relative paths and assume you run them from the plan directory:
+**Important**: The `--full-auto` flag uses `--sandbox workspace-write`, which restricts file writes to the current working directory.
 
+**Always run from project root:**
 ```bash
-cd plan/codex
-bash ralph-once.sh
+cd your-project
+bash plan/codex/ralph.sh 20
 ```
 
-**Project-deployed scripts** should add `SCRIPT_DIR` handling to ensure correct paths regardless of where you run them from:
-
-```bash
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-```
-
-This allows running from any directory:
-```bash
-bash plan/codex/ralph-once.sh  # Works from project root
-bash ralph-once.sh              # Works from plan/codex
-```
+This ensures:
+- Sandbox allows writes to `src/`, `tests/`, etc.
+- Plan files are referenced with `plan/codex/` prefix
 
 ## How it Works
 
