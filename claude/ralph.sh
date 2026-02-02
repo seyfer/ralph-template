@@ -61,7 +61,7 @@ for ((i = 1; i <= $1; i++)); do
 		--output-format stream-json \
 		--include-partial-messages \
 		"@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT" \
-		2>&1 | jq -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done: \(.result // "completed")]" else empty end' | tee "$TMPFILE"
+		2>&1 | jq --unbuffered -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done: \(.result // "completed")]" else empty end' | tee "$TMPFILE"
 	code=${PIPESTATUS[0]}
 	set -e
 
