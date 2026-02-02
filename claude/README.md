@@ -53,19 +53,25 @@ bash ralph.sh 25    # Run 25 iterations
 The scripts use these flags for **real-time streaming** output, piped through `jq` for readable text:
 
 ```bash
-claude --permission-mode acceptEdits -p \
+claude --permission-mode bypassPermissions -p \
   --verbose \
   --output-format stream-json \
   --include-partial-messages \
   "your prompt" \
-  | jq -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done: \(.result // "completed")]" else empty end'
+  | jq --unbuffered -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done: \(.result // "completed")]" else empty end'
 ```
 
 Key flags:
+- `--permission-mode bypassPermissions` - Auto-approve all operations (fully autonomous)
 - `-p` / `--print` - Non-interactive mode (required for scripts)
 - `--verbose` - Required for stream-json output
 - `--output-format stream-json` - Real-time streaming (vs buffered text)
 - `--include-partial-messages` - Show partial chunks as they arrive
+- `jq --unbuffered` - Disable buffering for live output when piped
+
+**Permission modes:**
+- `acceptEdits` - Auto-approve file edits only (bash commands require approval)
+- `bypassPermissions` - Auto-approve everything (edits + bash commands, use with caution)
 
 The `jq` filter extracts:
 - Text deltas from `stream_event` messages (live streaming text)

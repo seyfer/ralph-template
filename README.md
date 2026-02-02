@@ -83,18 +83,24 @@ Ralph can run in two modes:
 For real-time output (instead of buffered), the scripts use streaming JSON piped through `jq`:
 
 ```bash
-claude --permission-mode acceptEdits -p \
+claude --permission-mode bypassPermissions -p \
   --verbose \
   --output-format stream-json \
   --include-partial-messages \
   "your prompt" \
-  | jq -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done]" else empty end'
+  | jq --unbuffered -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done]" else empty end'
 ```
 
 Key flags:
+- `--permission-mode bypassPermissions` - Auto-approve all operations (edits + bash commands)
 - `--verbose` - Required for stream-json
 - `--output-format stream-json` - Real-time streaming output
 - `--include-partial-messages` - Show chunks as they arrive
+- `jq --unbuffered` - Disable output buffering for live streaming when piped
+
+**Permission modes:**
+- `acceptEdits` - Auto-approve file edits only (bash commands require approval)
+- `bypassPermissions` - Auto-approve everything (fully autonomous, use with caution)
 
 **Requires**: `jq` (`brew install jq` on macOS)
 
