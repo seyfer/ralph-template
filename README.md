@@ -4,6 +4,55 @@
 1) Fill `prd.json` with your project features/checklist.
 2) Update `init.sh` and `checks.sh` so they match your repo commands.
 3) Make sure your agent CLI is installed (`claude`, `codex`, etc).
+4) (Optional) Set up a sandbox environment for safer execution.
+
+### Sandbox Setup (Optional)
+
+Ralph can run in two modes:
+
+**Local Mode** (default): The agent runs directly on your machine using your local environment.
+
+**Sandbox Mode**: The agent runs in an isolated Docker container. Safer for autonomous runs, but requires Docker Desktop 4.50+.
+
+#### Claude Code Sandbox
+
+Install [Docker Desktop 4.50+](https://docs.docker.com/desktop/install), then:
+
+```bash
+# First-time setup: authenticate Claude in sandbox
+docker sandbox run claude
+
+# Run Ralph in sandbox mode
+AGENT_CMD="docker sandbox run claude" bash ralph.sh 25
+```
+
+Benefits:
+- Isolated execution environment
+- Your working directory mounts at the same path inside the container
+- Git config auto-injected for proper commit attribution
+- One sandbox per workspace - state persists between runs
+
+See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
+
+#### Codex Sandbox
+
+```bash
+# First-time setup
+docker sandbox run codex
+
+# Run Ralph in sandbox mode
+AGENT_CMD="docker sandbox run codex" bash ralph.sh 25
+```
+
+#### Cursor CLI Sandbox
+
+```bash
+# First-time setup
+docker sandbox run cursor
+
+# Run Ralph in sandbox mode
+AGENT_CMD="docker sandbox run cursor" bash ralph.sh 25
+```
 
 ## Run
 Single iteration:
@@ -24,4 +73,5 @@ This harness is based on the following approaches and research:
 
 - [Ralph Wiggum as a "software engineer"](https://ghuntley.com/ralph/) - Geoffrey Huntley's original Ralph technique: a bash loop that forces incremental work with termination markers.
 - [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) - Anthropic's research on initializer agents, progress files, and feedback loops for multi-context-window workflows.
+- [Getting Started with Ralph](https://www.aihero.dev/getting-started-with-ralph) - A beginner's guide to using Ralph for AI-powered coding.
 - [11 Tips For AI Coding With Ralph Wiggum](https://www.aihero.dev/tips-for-ai-coding-with-ralph-wiggum) - Matt Pocock's practical guide covering HITL vs AFK modes, PRD formats, feedback loops, and alternative loop types.
