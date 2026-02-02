@@ -1,5 +1,15 @@
 # Long-running agent harness ("Ralph, disciplined")
 
+## Quick Start
+
+```bash
+# Run single iteration
+bash plans/ralph-once.sh
+
+# Run multiple iterations (e.g., 10)
+bash plans/ralph.sh 10
+```
+
 ## Setup
 1) Fill `prd.json` with your project features/checklist.
 2) Update `init.sh` and `checks.sh` so they match your repo commands.
