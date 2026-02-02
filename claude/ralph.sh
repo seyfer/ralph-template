@@ -18,8 +18,7 @@ notify() {
 	fi
 }
 
-PROMPT=$(
-	cat <<'EOF'
+read -r -d '' PROMPT <<'EOF' || true
 You are operating inside a repository with a long-running agent harness.
 
 Inputs:
@@ -44,7 +43,6 @@ Rules (must follow):
 7) If ALL features in prd.json have passes=true, output exactly:
 <promise>COMPLETE</promise>
 EOF
-)
 
 TMPFILE=$(mktemp)
 trap 'rm -f "$TMPFILE"' EXIT

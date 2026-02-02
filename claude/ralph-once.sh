@@ -4,8 +4,7 @@ set -euo pipefail
 echo "== Ralph (single iteration) with Claude Code =="
 echo
 
-PROMPT=$(
-	cat <<'EOF'
+read -r -d '' PROMPT <<'EOF' || true
 You are operating inside a repository with a long-running agent harness.
 
 Inputs:
@@ -30,7 +29,6 @@ Rules (must follow):
 7) If ALL features in prd.json have passes=true, output exactly:
 <promise>COMPLETE</promise>
 EOF
-)
 
 # Claude Code with auto-accept edits and print mode
 result=$(claude --permission-mode acceptEdits -p "@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT")

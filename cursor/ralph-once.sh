@@ -16,8 +16,7 @@ if [ -z "${CURSOR_API_KEY:-}" ]; then
 	exit 1
 fi
 
-PROMPT=$(
-	cat <<'EOF'
+read -r -d '' PROMPT <<'EOF' || true
 You are operating inside a repository with a long-running agent harness.
 
 Inputs:
@@ -42,7 +41,6 @@ Rules (must follow):
 7) If ALL features in prd.json have passes=true, output exactly:
 <promise>COMPLETE</promise>
 EOF
-)
 
 # Cursor agent with --force flag to allow file modifications
 # NOTE: DO NOT use -p/--print flag - it causes the CLI to hang indefinitely
