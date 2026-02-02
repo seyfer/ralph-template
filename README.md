@@ -58,6 +58,8 @@ AGENT_CMD="docker sandbox run codex" bash ralph.sh 25
 
 > **Note**: Cursor's CLI (`agent`) does not currently have Docker Sandbox support. Runs in local mode only.
 
+> **Important Limitation**: Cursor CLI runs in **interactive mode** and stops after each task completion, waiting for follow-up input. This means **only `ralph-once.sh` works** with Cursor. For automated multi-iteration loops (`ralph.sh`), use Claude Code or Codex with Docker Sandbox instead.
+
 **Installation**
 
 ```bash
@@ -73,7 +75,7 @@ You must set the `CURSOR_API_KEY` environment variable:
 
 ```bash
 export CURSOR_API_KEY=your_api_key_here
-bash plans/ralph.sh 25
+bash plans/ralph-once.sh  # Single iteration only!
 ```
 
 **Modify scripts for Cursor**
@@ -86,19 +88,6 @@ agent --force \
     "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT"
 ```
 
-For `ralph.sh`, call agent directly in the loop (avoid subshell capture):
-
-```bash
-agent --force \
-    "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT"
-
-# Check completion via prd.json instead of grepping output:
-if ! grep -q '"passes": false' plans/prd.json; then
-    echo "PRD complete."
-    exit 0
-fi
-```
-
 **Key flags:**
 - `--force`: Allow file modifications without confirmation
 - `--approve-mcps`: Auto-approve MCP servers (if using MCP tools)
@@ -107,6 +96,7 @@ fi
 
 **Known Issues**
 
+- **Interactive mode only** - Agent stops after each iteration waiting for follow-up; `ralph.sh` loop doesn't work
 - `-p/--print` flag causes indefinite hanging - do NOT use it
 - Without `CURSOR_API_KEY`, you get keychain errors (`SecItemCopyMatching failed`)
 
