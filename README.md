@@ -58,32 +58,71 @@ AGENT_CMD="docker sandbox run codex" bash ralph.sh 25
 
 > **Note**: Cursor's CLI (`agent`) does not currently have Docker Sandbox support. You can run it in local mode only.
 
+**Installation**
+
+```bash
+curl https://cursor.com/install -fsS | bash
+```
+
+**Authentication (Required for headless mode)**
+
+For headless/script mode, you must set the `CURSOR_API_KEY` environment variable:
+
+1. Get your API key from: https://cursor.com/dashboard?tab=background-agents
+2. Export it before running:
+
+```bash
+export CURSOR_API_KEY=your_api_key_here
+bash plans/ralph.sh 25
+```
+
+Or inline:
+```bash
+CURSOR_API_KEY=your_api_key_here bash plans/ralph.sh 25
+```
+
 **Run Cursor Agent with Ralph locally**
 
-Cursor's CLI tool is called `agent`. It has different invocation syntax than Claude/Codex:
-- `-p, --print`: Print mode for scripts (required for Ralph)
-- `--workspace <path>`: Set workspace directory
-- Prompt is a **positional argument** (not a flag)
+Cursor's CLI tool is called `agent`. Key flags for headless/script usage:
+- `-p, --print`: Non-interactive print mode (required for Ralph)
+- `--force`: Allow file modifications without confirmation
+- `--output-format text`: Clean text output (or `stream-json` for real-time)
+- `--approve-mcps`: Auto-approve MCP servers (if using MCP tools)
 
-**Important**: The default `ralph-once.sh` uses Claude-specific flags. For Cursor, you need to modify the invocation:
+**Important**: The default `ralph-once.sh` uses Claude-specific flags. For Cursor, modify `ralph-once.sh`:
 
 ```bash
-# In ralph-once.sh, replace the $AGENT_CMD line with:
-result=$(agent -p --workspace "$(pwd)" "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT")
+# Replace the $AGENT_CMD line with:
+agent -p --force --output-format text \
+    "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT"
 ```
 
-Or create a wrapper script and use:
+For loop execution, modify `ralph.sh` to call agent directly (output buffering issues with subshell capture):
+
 ```bash
-# Run Ralph with Cursor's agent CLI
-AGENT_CMD="agent -p --workspace ." bash ralph.sh 25
+# In the loop, replace the subshell capture with direct execution:
+agent -p --force --output-format text \
+    "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT"
+
+# Check completion via prd.json instead of grepping output:
+if ! grep -q '"passes": false' plans/prd.json; then
+    echo "PRD complete."
+    exit 0
+fi
 ```
+
+**Known Issues**
+
+- The CLI may hang indefinitely after responding, even in `--print` mode
+- Keychain access errors (`SecItemCopyMatching failed`) occur if `CURSOR_API_KEY` is not set
+- Some users report better results with alternative agents like [opencode](https://github.com/opencode-ai/opencode) for headless use
 
 For isolated execution, consider:
 - Running Ralph on a separate development machine or VM
 - Using Docker to containerize your entire project workspace
 - Using other sandbox-supported agents (Claude Code, Codex, Gemini, cagent, Kiro)
 
-See [Cursor documentation](https://cursor.com/docs) for installation and usage.
+See [Cursor CLI documentation](https://cursor.com/docs/cli/overview) for more details.
 
 #### Other Supported Sandboxes
 
