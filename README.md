@@ -19,6 +19,7 @@ This repository provides pre-configured Ralph templates for different AI coding 
 - ✅ Local mode support
 - ✅ Docker Sandbox support
 - ✅ Full autonomous multi-iteration loops
+- ✅ Non-interactive execution with `codex exec`
 
 [Quick Start →](codex/README.md)
 
@@ -124,6 +125,20 @@ Benefits:
 - One sandbox per workspace - state persists between runs
 
 See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
+
+#### Codex Non-Interactive Mode
+
+Codex requires `codex exec` subcommand for non-interactive (script-based) execution:
+
+```bash
+# Interactive mode (requires TTY)
+codex --full-auto "prompt"
+
+# Non-interactive mode (for scripts)
+codex exec --full-auto "prompt"
+```
+
+**Important**: The Ralph harness scripts use `codex exec` because regular `codex` commands fail with "stdout is not a terminal" when output is piped or captured.
 
 #### Codex Sandbox
 

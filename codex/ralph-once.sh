@@ -30,12 +30,25 @@ Rules (must follow):
 <promise>COMPLETE</promise>
 EOF
 
-# Codex with full-auto mode (--sandbox workspace-write -a on-request)
-result=$(codex --full-auto "@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT")
+TMPFILE=$(mktemp)
+trap 'rm -f "$TMPFILE"' EXIT
 
-echo "$result"
+# Codex exec for non-interactive mode with full-auto (--sandbox workspace-write -a on-request)
+set +e
+codex exec -m gpt-5.2-codex --full-auto \
+	"@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT" \
+	2>&1 | tee "$TMPFILE"
+code=${PIPESTATUS[0]}
+set -e
 
-if [[ "$result" == *"<promise>COMPLETE</promise>"* ]]; then
+if grep -q "<promise>COMPLETE</promise>" "$TMPFILE"; then
+	echo
 	echo "✓ PRD complete."
 	exit 0
+fi
+
+if [ $code -ne 0 ]; then
+	echo
+	echo "✗ Failed (exit $code)."
+	exit $code
 fi

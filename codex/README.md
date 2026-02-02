@@ -60,10 +60,29 @@ bash ralph.sh 25    # Run 25 iterations
 
 ## CLI Options
 
-The scripts use `--full-auto` mode which is equivalent to:
+The scripts use `codex exec` with `--full-auto` mode for non-interactive execution:
+
 ```bash
-codex --sandbox workspace-write -a on-request "prompt"
+codex exec --full-auto "prompt"
 ```
+
+This is equivalent to:
+```bash
+codex exec --sandbox workspace-write -a on-request "prompt"
+```
+
+### Interactive vs Non-Interactive Mode
+
+**Interactive mode** (default `codex` command):
+- Requires a terminal (TTY) connection
+- Best for human-in-the-loop workflows
+- Will fail with "stdout is not a terminal" if piped
+
+**Non-interactive mode** (`codex exec`):
+- Designed for scripts and automation
+- Works with pipes and output capture
+- Ideal for Ralph harness loops
+- Does not require TTY
 
 **Key flags:**
 - `--full-auto` - Convenience alias for low-friction sandboxed automatic execution
@@ -80,7 +99,7 @@ codex --sandbox workspace-write -a on-request "prompt"
 
 **For fully autonomous mode (use with caution):**
 ```bash
-codex --dangerously-bypass-approvals-and-sandbox "prompt"
+codex exec --dangerously-bypass-approvals-and-sandbox "prompt"
 ```
 
 ## Sandbox Mode Benefits
@@ -108,6 +127,28 @@ See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
 - `init.sh` - Project initialization script
 - `checks.sh` - Definition-of-done validation
 
+## Working Directory
+
+**Template scripts** use relative paths and assume you run them from the plan directory:
+
+```bash
+cd plan/codex
+bash ralph-once.sh
+```
+
+**Project-deployed scripts** should add `SCRIPT_DIR` handling to ensure correct paths regardless of where you run them from:
+
+```bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+```
+
+This allows running from any directory:
+```bash
+bash plan/codex/ralph-once.sh  # Works from project root
+bash ralph-once.sh              # Works from plan/codex
+```
+
 ## How it Works
 
 1. Agent reads PRD and finds highest-priority incomplete feature
@@ -127,15 +168,21 @@ codex --version
 
 # Show help
 codex --help
+codex exec --help  # Non-interactive mode help
 
 # Resume previous session
 codex resume --last
 
 # Run in a different directory
 codex -C /path/to/project "prompt"
+codex exec -C /path/to/project --full-auto "prompt"
 
 # Use specific model
 codex -m gpt-4 "prompt"
+codex exec -m gpt-4 --full-auto "prompt"
+
+# Non-interactive execution (for scripts)
+codex exec --full-auto "prompt"
 ```
 
 ## Learn More

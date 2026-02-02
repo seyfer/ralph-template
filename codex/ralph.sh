@@ -54,10 +54,9 @@ for ((i = 1; i <= $1; i++)); do
 	echo "=============================="
 	echo "== Ralph (single iteration) with Codex =="
 
-	# Stream output to console AND capture to file for checking
-	# Using --full-auto: --sandbox workspace-write -a on-request
+	# Codex exec for non-interactive mode with full-auto
 	set +e
-	codex --full-auto \
+	codex exec -m gpt-5.2-codex --full-auto \
 		"@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT" \
 		2>&1 | tee "$TMPFILE"
 	code=${PIPESTATUS[0]}
