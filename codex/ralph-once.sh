@@ -30,8 +30,8 @@ Rules (must follow):
 <promise>COMPLETE</promise>
 EOF
 
-# Codex with auto-accept edits and print mode
-result=$(codex --permission-mode acceptEdits -p "@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT")
+# Codex with full-auto mode (--sandbox workspace-write -a on-request)
+result=$(codex --full-auto "@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT")
 
 echo "$result"
 

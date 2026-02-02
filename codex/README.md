@@ -1,6 +1,6 @@
 # Ralph Template for Codex
 
-This is a pre-configured Ralph harness for [OpenAI Codex](https://openai.com/codex/).
+This is a pre-configured Ralph harness for [OpenAI Codex CLI](https://github.com/openai/codex).
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ npm install -g @openai/codex
 
 2. **Authenticate**
 ```bash
-codex auth  # Follow prompts to authenticate
+codex login  # Follow prompts to authenticate
 ```
 
 3. **Customize your PRD**
@@ -58,14 +58,39 @@ bash ralph-once.sh  # Test single iteration
 bash ralph.sh 25    # Run 25 iterations
 ```
 
+## CLI Options
+
+The scripts use `--full-auto` mode which is equivalent to:
+```bash
+codex --sandbox workspace-write -a on-request "prompt"
+```
+
+**Key flags:**
+- `--full-auto` - Convenience alias for low-friction sandboxed automatic execution
+- `-s, --sandbox <MODE>` - Sandbox policy: `read-only`, `workspace-write`, `danger-full-access`
+- `-a, --ask-for-approval <POLICY>` - Approval policy: `untrusted`, `on-failure`, `on-request`, `never`
+- `-C, --cd <DIR>` - Set working directory
+- `-m, --model <MODEL>` - Select model to use
+
+**Approval policies:**
+- `untrusted` - Only run trusted commands without asking
+- `on-failure` - Run all commands, ask only on failure
+- `on-request` - Model decides when to ask (default with `--full-auto`)
+- `never` - Never ask for approval
+
+**For fully autonomous mode (use with caution):**
+```bash
+codex --dangerously-bypass-approvals-and-sandbox "prompt"
+```
+
 ## Sandbox Mode Benefits
 
 Install [Docker Desktop 4.50+](https://docs.docker.com/desktop/install):
 
-- ✅ Isolated execution environment
-- ✅ Safe for autonomous runs
-- ✅ Git config auto-injected
-- ✅ State persists between runs
+- Isolated execution environment
+- Safe for autonomous runs
+- Git config auto-injected
+- State persists between runs
 
 ```bash
 AGENT_CMD="docker sandbox run codex" bash ralph.sh 25
@@ -94,8 +119,28 @@ See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
 
 When done, outputs: `<promise>COMPLETE</promise>`
 
+## Useful Commands
+
+```bash
+# Check version
+codex --version
+
+# Show help
+codex --help
+
+# Resume previous session
+codex resume --last
+
+# Run in a different directory
+codex -C /path/to/project "prompt"
+
+# Use specific model
+codex -m gpt-4 "prompt"
+```
+
 ## Learn More
 
+- [Codex CLI GitHub](https://github.com/openai/codex)
 - [Ralph technique](https://ghuntley.com/ralph/)
 - [Getting Started with Ralph](https://www.aihero.dev/getting-started-with-ralph)
 - [11 Tips for Ralph](https://www.aihero.dev/tips-for-ai-coding-with-ralph-wiggum)

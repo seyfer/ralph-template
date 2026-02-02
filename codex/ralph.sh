@@ -18,6 +18,10 @@ notify() {
 	fi
 }
 
+# Change to the directory containing the plan files
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
 read -r -d '' PROMPT <<'EOF' || true
 You are operating inside a repository with a long-running agent harness.
 
@@ -55,8 +59,9 @@ for ((i = 1; i <= $1; i++)); do
 	echo "== Ralph (single iteration) with Codex =="
 
 	# Stream output to console AND capture to file for checking
+	# Using --full-auto: --sandbox workspace-write -a on-request
 	set +e
-	codex --permission-mode acceptEdits -p \
+	codex --full-auto \
 		"@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT" \
 		2>&1 | tee "$TMPFILE"
 	code=${PIPESTATUS[0]}
