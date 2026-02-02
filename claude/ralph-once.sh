@@ -30,12 +30,10 @@ Rules (must follow):
 <promise>COMPLETE</promise>
 EOF
 
-# Claude Code with auto-accept edits and print mode
-result=$(claude --permission-mode acceptEdits -p "@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT")
-
-echo "$result"
-
-if [[ "$result" == *"<promise>COMPLETE</promise>"* ]]; then
-	echo "✓ PRD complete."
-	exit 0
-fi
+# Claude Code with live streaming output, filtered through jq for readable text
+claude --permission-mode acceptEdits -p \
+	--verbose \
+	--output-format stream-json \
+	--include-partial-messages \
+	"@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT" \
+	| jq -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done: \(.result // "completed")]" else empty end'

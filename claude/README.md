@@ -4,19 +4,9 @@ This is a pre-configured Ralph harness for [Claude Code](https://docs.anthropic.
 
 ## Quick Start
 
-**Local Mode (Default):**
 ```bash
 bash ralph-once.sh  # Single iteration
 bash ralph.sh 10    # 10 iterations
-```
-
-**Sandbox Mode (Recommended):**
-```bash
-# First-time setup
-docker sandbox run claude
-
-# Run with sandbox isolation
-AGENT_CMD="docker sandbox run claude" bash ralph.sh 10
 ```
 
 ## Setup
@@ -58,18 +48,51 @@ bash ralph-once.sh  # Test single iteration
 bash ralph.sh 25    # Run 25 iterations
 ```
 
-## Sandbox Mode Benefits
+## Live Streaming Output
 
-Install [Docker Desktop 4.50+](https://docs.docker.com/desktop/install):
+The scripts use these flags for **real-time streaming** output, piped through `jq` for readable text:
 
+```bash
+claude --permission-mode acceptEdits -p \
+  --verbose \
+  --output-format stream-json \
+  --include-partial-messages \
+  "your prompt" \
+  | jq -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done: \(.result // "completed")]" else empty end'
+```
+
+Key flags:
+- `-p` / `--print` - Non-interactive mode (required for scripts)
+- `--verbose` - Required for stream-json output
+- `--output-format stream-json` - Real-time streaming (vs buffered text)
+- `--include-partial-messages` - Show partial chunks as they arrive
+
+The `jq` filter extracts:
+- Text deltas from `stream_event` messages (live streaming text)
+- Final result from `result` message
+
+**Requires**: `jq` must be installed (`brew install jq` on macOS)
+
+Without these flags, output is buffered until completion.
+
+## Sandbox Mode (Optional)
+
+Install [Docker Desktop 4.50+](https://docs.docker.com/desktop/install) for isolated execution:
+
+```bash
+# First-time setup: authenticate in sandbox
+docker sandbox run claude
+
+# Run with sandbox (requires ANTHROPIC_API_KEY)
+export ANTHROPIC_API_KEY=your_key_here
+docker sandbox run -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" claude ...
+```
+
+Benefits:
 - ✅ Isolated execution environment
 - ✅ Safe for autonomous runs
 - ✅ Git config auto-injected
 - ✅ State persists between runs
-
-```bash
-AGENT_CMD="docker sandbox run claude" bash ralph.sh 25
-```
 
 See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
 

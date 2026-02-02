@@ -54,11 +54,14 @@ for ((i = 1; i <= $1; i++)); do
 	echo "=============================="
 	echo "== Ralph (single iteration) with Claude Code =="
 
-	# Stream output to console AND capture to file for checking
+	# Stream output with jq to extract text, capture to file for completion check
 	set +e
 	claude --permission-mode acceptEdits -p \
+		--verbose \
+		--output-format stream-json \
+		--include-partial-messages \
 		"@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT" \
-		2>&1 | tee "$TMPFILE"
+		2>&1 | jq -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done: \(.result // "completed")]" else empty end' | tee "$TMPFILE"
 	code=${PIPESTATUS[0]}
 	set -e
 

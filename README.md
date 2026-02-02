@@ -9,6 +9,7 @@ This repository provides pre-configured Ralph templates for different AI coding 
 - ✅ Local mode support
 - ✅ Docker Sandbox support
 - ✅ Full autonomous multi-iteration loops
+- ✅ Live streaming output with `--output-format stream-json`
 - **Recommended for production use**
 
 [Quick Start →](claude/README.md)
@@ -77,6 +78,26 @@ Ralph can run in two modes:
 
 **Sandbox Mode**: The agent runs in an isolated Docker container. Safer for autonomous runs, but requires Docker Desktop 4.50+.
 
+#### Claude Code Live Streaming
+
+For real-time output (instead of buffered), the scripts use streaming JSON piped through `jq`:
+
+```bash
+claude --permission-mode acceptEdits -p \
+  --verbose \
+  --output-format stream-json \
+  --include-partial-messages \
+  "your prompt" \
+  | jq -r 'if .type == "stream_event" and .event.delta.text then .event.delta.text elif .type == "result" then "\n\n[Done]" else empty end'
+```
+
+Key flags:
+- `--verbose` - Required for stream-json
+- `--output-format stream-json` - Real-time streaming output
+- `--include-partial-messages` - Show chunks as they arrive
+
+**Requires**: `jq` (`brew install jq` on macOS)
+
 #### Claude Code Sandbox
 
 Install [Docker Desktop 4.50+](https://docs.docker.com/desktop/install), then:
@@ -85,8 +106,9 @@ Install [Docker Desktop 4.50+](https://docs.docker.com/desktop/install), then:
 # First-time setup: authenticate Claude in sandbox
 docker sandbox run claude
 
-# Run Ralph in sandbox mode
-AGENT_CMD="docker sandbox run claude" bash ralph.sh 25
+# Run Ralph in sandbox mode (requires API key for sandbox)
+export ANTHROPIC_API_KEY=your_key_here
+docker sandbox run -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" claude ...
 ```
 
 Benefits:
