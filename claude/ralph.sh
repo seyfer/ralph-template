@@ -56,7 +56,7 @@ for ((i = 1; i <= $1; i++)); do
 
 	# Stream output with jq to extract text, capture to file for completion check
 	set +e
-	claude --permission-mode acceptEdits -p \
+	claude --permission-mode bypassPermissions -p \
 		--verbose \
 		--output-format stream-json \
 		--include-partial-messages \

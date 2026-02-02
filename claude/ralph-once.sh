@@ -31,7 +31,7 @@ Rules (must follow):
 EOF
 
 # Claude Code with live streaming output, filtered through jq for readable text
-claude --permission-mode acceptEdits -p \
+claude --permission-mode bypassPermissions -p \
 	--verbose \
 	--output-format stream-json \
 	--include-partial-messages \
