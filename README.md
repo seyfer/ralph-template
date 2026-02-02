@@ -44,14 +44,42 @@ docker sandbox run codex
 AGENT_CMD="docker sandbox run codex" bash ralph.sh 25
 ```
 
-#### Cursor CLI Sandbox
+#### Cursor CLI (Local Mode Only)
+
+> **Note**: Cursor's CLI (`agent`) does not currently have Docker Sandbox support. You can run it in local mode only.
+
+**Run Cursor Agent with Ralph locally**
+
+Cursor's CLI tool is called `agent`. Use it in local mode:
 
 ```bash
-# First-time setup
-docker sandbox run cursor
+# Run Ralph with Cursor's agent CLI
+AGENT_CMD="agent" bash ralph.sh 25
+```
 
-# Run Ralph in sandbox mode
-AGENT_CMD="docker sandbox run cursor" bash ralph.sh 25
+For isolated execution, consider:
+- Running Ralph on a separate development machine or VM
+- Using Docker to containerize your entire project workspace
+- Using other sandbox-supported agents (Claude Code, Codex, Gemini, cagent, Kiro)
+
+See [Cursor documentation](https://cursor.com/docs) for installation and usage.
+
+#### Other Supported Sandboxes
+
+Docker Sandboxes also supports: **Gemini**, **cagent**, and **Kiro**
+
+```bash
+# Gemini
+docker sandbox run gemini
+AGENT_CMD="docker sandbox run gemini" bash ralph.sh 25
+
+# cagent (Docker's agent)
+docker sandbox run cagent
+AGENT_CMD="docker sandbox run cagent" bash ralph.sh 25
+
+# Kiro (AWS)
+docker sandbox run kiro
+AGENT_CMD="docker sandbox run kiro" bash ralph.sh 25
 ```
 
 ## Run
