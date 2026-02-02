@@ -18,10 +18,6 @@ notify() {
 	fi
 }
 
-# Change to the directory containing the plan files
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-
 read -r -d '' PROMPT <<'EOF' || true
 You are operating inside a repository with a long-running agent harness.
 
