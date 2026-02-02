@@ -1,0 +1,44 @@
+{
+  "project": "YOUR_PROJECT_NAME",
+  "agent": "codex",
+  "rules": {
+    "one_feature_per_iteration": true,
+    "must_run_checks_before_done": true,
+    "commit_per_feature": true,
+    "definition_of_done": [
+      "Feature passes checks.sh",
+      "PRD item marked passes=true",
+      "Progress log updated",
+      "Commit created"
+    ]
+  },
+  "features": [
+    {
+      "id": "F-001",
+      "priority": 1,
+      "category": "ui",
+      "description": "Example: YAML formatter page supports resizeable crop overlay",
+      "steps": [
+        "Add UI component",
+        "Wire state",
+        "Add tests (or minimal validation)",
+        "Run checks"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "F-002",
+      "priority": 2,
+      "category": "functional",
+      "description": "Example: API returns correct output for conversion",
+      "steps": [
+        "Implement endpoint",
+        "Add unit tests",
+        "Run checks"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

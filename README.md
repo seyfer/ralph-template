@@ -1,5 +1,37 @@
 # Long-running agent harness ("Ralph, disciplined")
 
+## Agent-Specific Templates
+
+This repository provides pre-configured Ralph templates for different AI coding agents:
+
+### 📁 [claude/](claude/)
+**Claude Code** - Anthropic's coding agent
+- ✅ Local mode support
+- ✅ Docker Sandbox support
+- ✅ Full autonomous multi-iteration loops
+- **Recommended for production use**
+
+[Quick Start →](claude/README.md)
+
+### 📁 [codex/](codex/)
+**Codex** - OpenAI's coding agent
+- ✅ Local mode support
+- ✅ Docker Sandbox support
+- ✅ Full autonomous multi-iteration loops
+
+[Quick Start →](codex/README.md)
+
+### 📁 [cursor/](cursor/)
+**Cursor Agent** - Cursor's CLI agent
+- ✅ Local mode support
+- ❌ No Docker Sandbox support
+- ⚠️ Interactive mode only (manual iteration)
+- Best for human-in-the-loop workflows
+
+[Quick Start →](cursor/README.md)
+
+---
+
 ## Quick Start
 
 ```bash
@@ -13,8 +45,29 @@ bash plans/ralph.sh 10
 ## Setup
 1) Fill `prd.json` with your project features/checklist.
 2) Update `init.sh` and `checks.sh` so they match your repo commands.
-3) Make sure your agent CLI is installed (`claude`, `codex`, etc).
+3) Install your agent CLI (see below).
 4) (Optional) Set up a sandbox environment for safer execution.
+
+### Install CLI Agents
+
+**Claude Code** (Anthropic):
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+**Codex** (OpenAI):
+```bash
+# Install using Homebrew
+brew install --cask codex
+
+# Or install using npm
+npm install -g @openai/codex
+```
+
+**Cursor Agent**:
+```bash
+curl https://cursor.com/install -fsS | bash
+```
 
 ### Sandbox Setup (Optional)
 

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "== Ralph (single iteration) with Cursor Agent =="
+
+# Check for API key
+if [ -z "${CURSOR_API_KEY:-}" ]; then
+	echo "ERROR: CURSOR_API_KEY environment variable not set"
+	echo
+	echo "Get your API key from:"
+	echo "  https://cursor.com/dashboard?tab=background-agents"
+	echo
+	echo "Then export it:"
+	echo "  export CURSOR_API_KEY=your_api_key_here"
+	echo
+	exit 1
+fi
+
+PROMPT=$(
+	cat <<'EOF'
+You are operating inside a repository with a long-running agent harness.
+
+Inputs:
+- @prd.json (source of truth requirements + priority + pass/fail)
+- @context.md (rolling summary; update only if needed)
+- @progress.md (append-only log)
+- @init.sh (how to set up)
+- @checks.sh (definition-of-done gate)
+
+Rules (must follow):
+1) Pick the SINGLE highest-priority feature where passes=false. Work ONLY on that feature.
+2) Do the implementation in the repo.
+3) Run: bash checks.sh
+   - If checks fail: fix until they pass OR if blocked, document exactly why in progress.md and stop.
+4) Update prd.json for that feature:
+   - passes=true only when checks pass
+   - add notes if relevant
+5) Append an entry to progress.md:
+   - what changed, commands run, what's next
+6) If you made meaningful progress, create a git commit for THIS feature only.
+   Commit message format: "feat(F-XXX): <short summary>"
+7) If ALL features in prd.json have passes=true, output exactly:
+<promise>COMPLETE</promise>
+EOF
+)
+
+# Cursor agent with --force flag to allow file modifications
+# NOTE: DO NOT use -p/--print flag - it causes the CLI to hang indefinitely
+# NOTE: Agent runs in interactive mode, so this script will only complete one iteration
+agent --force \
+	"@prd.json" \
+	"@context.md" \
+	"@progress.md" \
+	"@init.sh" \
+	"@checks.sh" \
+	"$PROMPT"
+
+# Note: Unlike Claude/Codex, we can't capture output easily due to interactive mode
+echo
+echo "✓ Iteration complete."
+echo "Run 'bash ralph-once.sh' again to continue to the next feature."
