@@ -50,11 +50,22 @@ AGENT_CMD="docker sandbox run codex" bash ralph.sh 25
 
 **Run Cursor Agent with Ralph locally**
 
-Cursor's CLI tool is called `agent`. Use it in local mode:
+Cursor's CLI tool is called `agent`. It has different invocation syntax than Claude/Codex:
+- `-p, --print`: Print mode for scripts (required for Ralph)
+- `--workspace <path>`: Set workspace directory
+- Prompt is a **positional argument** (not a flag)
+
+**Important**: The default `ralph-once.sh` uses Claude-specific flags. For Cursor, you need to modify the invocation:
 
 ```bash
+# In ralph-once.sh, replace the $AGENT_CMD line with:
+result=$(agent -p --workspace "$(pwd)" "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT")
+```
+
+Or create a wrapper script and use:
+```bash
 # Run Ralph with Cursor's agent CLI
-AGENT_CMD="agent" bash ralph.sh 25
+AGENT_CMD="agent -p --workspace ." bash ralph.sh 25
 ```
 
 For isolated execution, consider:
