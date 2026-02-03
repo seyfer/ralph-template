@@ -8,15 +8,15 @@ echo
 
 # Install deps if needed (adjust to your repo)
 if [ -f "pnpm-lock.yaml" ]; then
-	echo "Installing deps with pnpm..."
-	pnpm install
+    echo "Installing deps with pnpm..."
+    pnpm install
 elif [ -f "package-lock.json" ]; then
-	echo "Installing deps with npm..."
-	npm ci
+    echo "Installing deps with npm..."
+    npm ci
 else
-	echo "No lockfile found. Adjust init.sh."
+    echo "No lockfile found. Adjust init.sh."
 fi
 
 echo
 echo "Init complete."
-echo "To run checks: bash plans/checks.sh"
+echo "To run checks: bash checks.sh"

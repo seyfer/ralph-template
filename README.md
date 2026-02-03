@@ -39,10 +39,10 @@ This repository provides pre-configured Ralph templates for different AI coding 
 
 ```bash
 # Run single iteration
-bash plans/ralph-once.sh
+bash ralph-once.sh
 
 # Run multiple iterations (e.g., 10)
-bash plans/ralph.sh 10
+bash ralph.sh 10
 ```
 
 ## Setup
@@ -174,7 +174,7 @@ You must set the `CURSOR_API_KEY` environment variable:
 
 ```bash
 export CURSOR_API_KEY=your_api_key_here
-bash plans/ralph-once.sh  # Single iteration only!
+bash ralph-once.sh  # Single iteration only!
 ```
 
 **Modify scripts for Cursor**
@@ -184,7 +184,7 @@ The default `ralph-once.sh` uses Claude-specific flags. For Cursor, replace the 
 ```bash
 # Use --force to allow file modifications
 agent --force \
-    "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT"
+    "@prd.json @context.md @progress.md @init.sh @checks.sh $PROMPT"
 ```
 
 **Key flags:**
