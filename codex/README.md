@@ -60,16 +60,18 @@ bash ralph.sh 25    # Run 25 iterations
 
 ## CLI Options
 
-The scripts use `codex exec` with `--full-auto` mode for non-interactive execution:
+The scripts use `codex exec` with full access sandbox for non-interactive execution:
 
 ```bash
-codex exec --full-auto "prompt"
+codex exec -m gpt-5.2-codex --sandbox danger-full-access "prompt"
 ```
 
-This is equivalent to:
-```bash
-codex exec --sandbox workspace-write -a on-request "prompt"
-```
+### Why `danger-full-access`?
+
+The default `--full-auto` (which uses `--sandbox workspace-write`) blocks writes to `.git`, preventing automated commits. Using `danger-full-access` allows:
+- Git commits within the automation loop
+- Full file system access for the agent
+- Complete autonomous operation
 
 ### Interactive vs Non-Interactive Mode
 
@@ -84,23 +86,20 @@ codex exec --sandbox workspace-write -a on-request "prompt"
 - Ideal for Ralph harness loops
 - Does not require TTY
 
-**Key flags:**
-- `--full-auto` - Convenience alias for low-friction sandboxed automatic execution
-- `-s, --sandbox <MODE>` - Sandbox policy: `read-only`, `workspace-write`, `danger-full-access`
-- `-a, --ask-for-approval <POLICY>` - Approval policy: `untrusted`, `on-failure`, `on-request`, `never`
-- `-C, --cd <DIR>` - Set working directory
+**Key flags for `codex exec`:**
 - `-m, --model <MODEL>` - Select model to use
+- `-s, --sandbox <MODE>` - Sandbox policy: `read-only`, `workspace-write`, `danger-full-access`
+- `-C, --cd <DIR>` - Set working directory
 
-**Approval policies:**
-- `untrusted` - Only run trusted commands without asking
-- `on-failure` - Run all commands, ask only on failure
-- `on-request` - Model decides when to ask (default with `--full-auto`)
+**Key flags for interactive `codex` only:**
+- `-a, --ask-for-approval <POLICY>` - Approval policy (not available in `exec`)
+- `--full-auto` - Convenience alias for `--sandbox workspace-write -a on-request`
+
+**Sandbox modes:**
+- `read-only` - No file writes allowed
+- `workspace-write` - Writes only in current directory (blocks `.git`)
+- `danger-full-access` - Full file system access (allows git commits)
 - `never` - Never ask for approval
-
-**For fully autonomous mode (use with caution):**
-```bash
-codex exec --dangerously-bypass-approvals-and-sandbox "prompt"
-```
 
 ## Sandbox Mode Benefits
 
@@ -127,9 +126,7 @@ See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
 - `init.sh` - Project initialization script
 - `checks.sh` - Definition-of-done validation
 
-## Working Directory and Sandbox
-
-**Important**: The `--full-auto` flag uses `--sandbox workspace-write`, which restricts file writes to the current working directory.
+## Working Directory
 
 **Always run from project root:**
 ```bash
@@ -137,9 +134,7 @@ cd your-project
 bash plan/codex/ralph.sh 20
 ```
 
-This ensures:
-- Sandbox allows writes to `src/`, `tests/`, etc.
-- Plan files are referenced with `plan/codex/` prefix
+This ensures plan files are referenced correctly with `plan/codex/` prefix.
 
 ## How it Works
 
@@ -167,13 +162,11 @@ codex resume --last
 
 # Run in a different directory
 codex -C /path/to/project "prompt"
-codex exec -C /path/to/project --full-auto "prompt"
 
 # Use specific model
-codex -m gpt-4 "prompt"
-codex exec -m gpt-4 --full-auto "prompt"
+codex exec -m gpt-5.2-codex --sandbox danger-full-access "prompt"
 
-# Non-interactive execution (for scripts)
+# Non-interactive with restricted sandbox (no git commits)
 codex exec --full-auto "prompt"
 ```
 

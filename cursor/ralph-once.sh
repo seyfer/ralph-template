@@ -38,8 +38,10 @@ Rules (must follow):
    - what changed, commands run, what's next
 6) If you made meaningful progress, create a git commit for THIS feature only.
    Commit message format: "feat(F-XXX): <short summary>"
-7) If ALL features in prd.json have passes=true, output exactly:
-<promise>COMPLETE</promise>
+   - Only commit files YOU changed for this feature
+   - Ignore any pre-existing uncommitted changes
+7) If all features in prd.json have passes=true, output: <promise>COMPLETE</promise>
+8) Do NOT ask questions - proceed autonomously with best judgment
 EOF
 
 # Cursor agent with --force flag to allow file modifications
@@ -53,7 +55,12 @@ agent --force \
 	"@checks.sh" \
 	"$PROMPT"
 
-# Note: Unlike Claude/Codex, we can't capture output easily due to interactive mode
+# Check if PRD is complete by verifying prd.json
+incomplete_count=$(jq '[.features[] | select(.passes == false)] | length' prd.json 2>/dev/null || echo "0")
 echo
-echo "✓ Iteration complete."
-echo "Run 'bash ralph-once.sh' again to continue to the next feature."
+if [ "$incomplete_count" -eq 0 ]; then
+	echo "✓✓✓ PRD complete! All features pass. ✓✓✓"
+else
+	echo "✓ Iteration complete. $incomplete_count features remaining."
+	echo "Run 'bash ralph-once.sh' again to continue to the next feature."
+fi

@@ -27,16 +27,38 @@ Rules (must follow):
    - what changed, commands run, what's next
 6) If you made meaningful progress, create a git commit for THIS feature only.
    Commit message format: "feat(F-XXX): <short summary>"
-7) If ALL features in prd.json have passes=true, output exactly:
-<promise>COMPLETE</promise>
+   - Only commit files YOU changed for this feature
+   - Ignore any pre-existing uncommitted changes
+7) If all features in prd.json have passes=true, output: <promise>COMPLETE</promise>
+8) Do NOT ask questions - proceed autonomously with best judgment
 EOF
 
-# Claude Code style (works for your screenshot pattern)
-result=$($AGENT_CMD --permission-mode acceptEdits -p "@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT")
+TMPFILE=$(mktemp)
+trap 'rm -f "$TMPFILE"' EXIT
 
-echo "$result"
+# Claude Code style
+set +e
+$AGENT_CMD --permission-mode acceptEdits -p \
+	"@plans/prd.json @plans/context.md @plans/progress.md @plans/init.sh @plans/checks.sh $PROMPT" \
+	2>&1 | tee "$TMPFILE"
+code=${PIPESTATUS[0]}
+set -e
 
-if [[ "$result" == *"<promise>COMPLETE</promise>"* ]]; then
-	echo "PRD complete."
-	exit 0
+if grep -q "<promise>COMPLETE</promise>" "$TMPFILE"; then
+	# Verify by checking prd.json - model sometimes outputs COMPLETE prematurely
+	incomplete_count=$(jq '[.features[] | select(.passes == false)] | length' plans/prd.json 2>/dev/null || echo "0")
+	if [ "$incomplete_count" -eq 0 ]; then
+		echo
+		echo "✓ PRD complete."
+		exit 0
+	else
+		echo
+		echo "⚠ Model claimed COMPLETE but $incomplete_count features still have passes=false."
+	fi
+fi
+
+if [ $code -ne 0 ]; then
+	echo
+	echo "✗ Failed (exit $code)."
+	exit $code
 fi

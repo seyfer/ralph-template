@@ -20,6 +20,7 @@ This repository provides pre-configured Ralph templates for different AI coding 
 - ✅ Docker Sandbox support
 - ✅ Full autonomous multi-iteration loops
 - ✅ Non-interactive execution with `codex exec`
+- ✅ Full-access sandbox for git commits
 
 [Quick Start →](codex/README.md)
 
@@ -134,11 +135,13 @@ Codex requires `codex exec` subcommand for non-interactive (script-based) execut
 # Interactive mode (requires TTY)
 codex --full-auto "prompt"
 
-# Non-interactive mode (for scripts)
-codex exec --full-auto "prompt"
+# Non-interactive mode with full access (for scripts)
+codex exec -m gpt-5.2-codex --sandbox danger-full-access "prompt"
 ```
 
-**Important**: The Ralph harness scripts use `codex exec` because regular `codex` commands fail with "stdout is not a terminal" when output is piped or captured.
+**Why `danger-full-access`?** The default `--full-auto` uses `--sandbox workspace-write` which blocks writes to `.git`, preventing automated commits. Using `danger-full-access` allows full autonomous operation including git commits.
+
+**Note**: The Ralph harness scripts use `codex exec` because regular `codex` commands fail with "stdout is not a terminal" when output is piped or captured.
 
 #### Codex Sandbox
 
@@ -218,9 +221,11 @@ AGENT_CMD="docker sandbox run kiro" bash ralph.sh 25
 
 ## Agent expectations
 - Works on exactly ONE feature per iteration.
-- Must run checks (`plans/checks.sh`) before marking anything done.
+- Must run checks (`checks.sh`) before marking anything done.
 - Must update PRD + append progress log + commit.
-- When everything is done, prints: <promise>COMPLETE</promise>
+- When everything is done, outputs: `<promise>COMPLETE</promise>`
+
+**Note:** Scripts verify PRD completion by checking `prd.json` with `jq` - if model claims COMPLETE but features remain, the loop continues. Requires `jq` (`brew install jq`).
 
 ## Sources
 

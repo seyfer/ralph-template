@@ -93,7 +93,7 @@ bash ralph-once.sh
 5. Creates a git commit
 6. **Stops and waits for next manual run**
 
-When all features are done, outputs: `<promise>COMPLETE</promise>`
+Script verifies PRD completion by checking `prd.json` with `jq`
 
 ## Recommended Workflow
 
@@ -102,7 +102,9 @@ Since Cursor doesn't support automated loops:
 1. Run `bash ralph-once.sh`
 2. Review the changes
 3. Run again when ready: `bash ralph-once.sh`
-4. Repeat until PRD is complete
+4. Repeat until PRD is complete (script will tell you when done)
+
+**Requires**: `jq` for PRD completion verification (`brew install jq`)
 
 **For true autonomous operation, use Claude Code or Codex with Docker Sandbox.**
 
