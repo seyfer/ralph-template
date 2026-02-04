@@ -4,6 +4,11 @@ set -euo pipefail
 echo "== Ralph (single iteration) with Codex =="
 echo
 
+if ! command -v codex >/dev/null 2>&1; then
+	echo "ERROR: codex CLI not found. Install Codex CLI first."
+	exit 1
+fi
+
 read -r -d '' PROMPT <<'EOF' || true
 You are operating inside a repository with a long-running agent harness.
 

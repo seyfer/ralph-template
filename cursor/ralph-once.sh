@@ -3,6 +3,11 @@ set -euo pipefail
 
 echo "== Ralph (single iteration) with Cursor Agent =="
 
+if ! command -v agent >/dev/null 2>&1; then
+	echo "ERROR: Cursor agent CLI not found. Install Cursor CLI first."
+	exit 1
+fi
+
 # Check for API key
 if [ -z "${CURSOR_API_KEY:-}" ]; then
 	echo "ERROR: CURSOR_API_KEY environment variable not set"

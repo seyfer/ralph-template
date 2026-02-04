@@ -4,6 +4,8 @@ This is a pre-configured Ralph harness for [Claude Code](https://docs.anthropic.
 
 ## Quick Start
 
+Run these commands from the `claude/` directory.
+
 ```bash
 bash ralph-once.sh  # Single iteration
 bash ralph.sh 10    # 10 iterations

@@ -11,6 +11,8 @@ This is a pre-configured Ralph harness for [Cursor's CLI agent](https://cursor.c
 
 ## Quick Start
 
+Run these commands from the `cursor/` directory.
+
 ```bash
 # Set your API key (required!)
 export CURSOR_API_KEY=your_api_key_here

@@ -4,6 +4,11 @@ set -euo pipefail
 echo "== Ralph (single iteration) with Claude Code =="
 echo
 
+if ! command -v claude >/dev/null 2>&1; then
+	echo "ERROR: claude CLI not found. Install Claude Code first."
+	exit 1
+fi
+
 read -r -d '' PROMPT <<'EOF' || true
 You are operating inside a repository with a long-running agent harness.
 

@@ -9,6 +9,11 @@ if [ -z "${1:-}" ]; then
 	exit 1
 fi
 
+if ! command -v codex >/dev/null 2>&1; then
+	echo "ERROR: codex CLI not found. Install Codex CLI first."
+	exit 1
+fi
+
 notify() {
 	# macOS notification
 	if command -v osascript >/dev/null 2>&1; then

@@ -4,6 +4,8 @@ This is a pre-configured Ralph harness for [OpenAI Codex CLI](https://github.com
 
 ## Quick Start
 
+Run these commands from the `codex/` directory.
+
 **Local Mode (Default):**
 ```bash
 bash ralph-once.sh  # Single iteration
@@ -12,11 +14,11 @@ bash ralph.sh 10    # 10 iterations
 
 **Sandbox Mode (Recommended):**
 ```bash
-# First-time setup
+# Start a sandbox shell
 docker sandbox run codex
 
-# Run with sandbox isolation
-AGENT_CMD="docker sandbox run codex" bash ralph.sh 10
+# In the sandbox shell, from this directory:
+bash ralph.sh 10
 ```
 
 ## Setup
@@ -111,7 +113,9 @@ Install [Docker Desktop 4.50+](https://docs.docker.com/desktop/install):
 - State persists between runs
 
 ```bash
-AGENT_CMD="docker sandbox run codex" bash ralph.sh 25
+docker sandbox run codex
+# In the sandbox shell, from this directory:
+bash ralph.sh 25
 ```
 
 See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
@@ -128,13 +132,13 @@ See [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/) for more.
 
 ## Working Directory
 
-**Always run from project root:**
+**Always run from the `codex/` directory:**
 ```bash
-cd your-project
-bash plan/codex/ralph.sh 20
+cd codex
+bash ralph.sh 20
 ```
 
-This ensures plan files are referenced correctly with `plan/codex/` prefix.
+This ensures the local `prd.json`, `context.md`, and scripts are referenced correctly.
 
 ## How it Works
 
